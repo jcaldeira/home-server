@@ -1,0 +1,20 @@
+version: '3.3'
+services:
+    portainer-ce:
+        ports:
+            - '8000:8000'
+            - '9443:9443'
+        container_name: portainer
+        restart: unless-stopped
+        volumes:
+            - '/var/run/docker.sock:/var/run/docker.sock'
+            - 'portainer_data:/data'
+        image: 'portainer/portainer-ce:latest'
+
+volumes:
+  portainer_data:
+    driver: local
+    driver_opts:
+      type: "nfs"
+      o: "addr=truenas.home,rw,nfsvers=4,noatime,rsize=8192,wsize=8192,tcp,timeo=14"
+      device: ":/mnt/bpool/docker_volumes/portainer_data"
