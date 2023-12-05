@@ -1,0 +1,34 @@
+version: "3.3"
+services:
+  portainer-ce:
+    # ports:
+    #   - 8000:8000
+    #   - 9443:9443
+    container_name: portainer
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer:/data
+    image: portainer/portainer-ce:latest
+    networks:
+      - traefik
+    labels:
+      traefik.enable: true
+      traefik.http.routers.portainer.rule: Host(`portainer.home`)
+      traefik.http.routers.portainer.entrypoints: https
+      traefik.http.routers.portainer.tls: true
+      traefik.http.services.portainer.loadbalancer.server.port: 9443
+      traefik.http.services.portainer.loadbalancer.server.scheme: https
+
+volumes:
+  portainer:
+    name: portainer
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=truenas.home,rw,nfsvers=4,noatime,rsize=8192,wsize=8192,tcp,timeo=14
+      device: :/mnt/bpool/docker_volumes/portainer
+
+networks:
+  traefik:
+    external: true
