@@ -1,0 +1,56 @@
+services:
+  traefik:
+    image: traefik:2.10.4
+    container_name: traefik
+    ports:
+      # - 80:80
+      - 443:443
+      - 8080:8080
+    volumes:
+      - traefik:/etc/traefik
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - traefik
+    restart: always
+    environment:
+      TRAEFIK_GLOBAL_CHECKNEWVERSION: false
+      TRAEFIK_GLOBAL_SENDANONYMOUSUSAGE: false
+      TRAEFIK_LOG: true
+      TRAEFIK_LOG_FILEPATH: /etc/traefik/traefik.log
+      # TRAEFIK_LOG_FORMAT: json
+      TRAEFIK_LOG_LEVEL: DEBUG
+      # TRAEFIK_ENTRYPOINTS_HTTP_ADDRESS: :80
+      TRAEFIK_ENTRYPOINTS_HTTPS_ADDRESS: :443
+      # TRAEFIK_ENTRYPOINTS_HTTPS_HTTP_TLS_CERTRESOLVER: staging
+      # TRAEFIK_ENTRYPOINTS_HTTPS_HTTP_TLS_DOMAINS_n_MAIN: 240-caldeira.duckdns.org
+      TRAEFIK_API_DASHBOARD: true
+      TRAEFIK_API_INSECURE: true
+      TRAEFIK_PROVIDERS_DOCKER: true
+      TRAEFIK_PROVIDERS_DOCKER_WATCH: true
+      TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT: false
+      TRAEFIK_CERTIFICATESRESOLVERS_STAGING: true
+      TRAEFIK_CERTIFICATESRESOLVERS_STAGING_ACME_CASERVER: https://acme-staging-v02.api.letsencrypt.org/directory
+      TRAEFIK_CERTIFICATESRESOLVERS_STAGING_ACME_EMAIL: joaocaldeira379@gmail.com
+      TRAEFIK_CERTIFICATESRESOLVERS_STAGING_ACME_STORAGE: /etc/traefik/acme/acme.json
+      TRAEFIK_CERTIFICATESRESOLVERS_STAGING_ACME_TLSCHALLENGE: true
+      TRAEFIK_CERTIFICATESRESOLVERS_PRODUCTION: true
+      TRAEFIK_CERTIFICATESRESOLVERS_PRODUCTION_ACME_EMAIL: joaocaldeira379@gmail.com
+      TRAEFIK_CERTIFICATESRESOLVERS_PRODUCTION_ACME_STORAGE: /etc/traefik/acme/acme.json
+      TRAEFIK_CERTIFICATESRESOLVERS_PRODUCTION_ACME_TLSCHALLENGE: true
+      TRAEFIK_SERVERSTRANSPORT_INSECURESKIPVERIFY: true
+      TRAEFIK_PROVIDERS_FILE_DIRECTORY: /etc/traefik/dynamic
+      TRAEFIK_PROVIDERS_FILE_WATCH: true
+
+volumes:
+  traefik:
+    name: traefik
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=truenas.home,rw,nfsvers=4,noatime,rsize=8192,wsize=8192,tcp,timeo=14
+      device: :/mnt/bpool/docker_volumes/traefik
+
+networks:
+  traefik:
+    name: traefik
+    driver: bridge

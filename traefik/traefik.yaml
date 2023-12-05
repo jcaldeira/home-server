@@ -1,0 +1,40 @@
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+
+entryPoints:
+  # http:
+  #   address: :80
+
+  https:
+    address: :443
+
+
+api:
+  insecure: true
+  dashboard: true
+
+
+providers:
+  docker:
+    exposedByDefault: false
+
+
+certificatesResolvers:
+  staging:
+    acme:
+      email: "joaocaldeira379@gmail.com"
+      storage: "/etc/traefik/acme.json"
+      caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      tlsChallenge: {}
+
+  production:
+    acme:
+      email: "joaocaldeira379@gmail.com"
+      storage: "/etc/traefik/acme.json"
+      tlsChallenge: {}
+
+
+serversTransport:
+  insecureSkipVerify: true
