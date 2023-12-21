@@ -1,0 +1,56 @@
+http:
+  routers:
+    home-assistant-local:
+      service: home-assistant
+      rule: "Host(`ha.home`)"
+      entryPoints:
+        - websecure
+      tls: true
+    home-assistant:
+      service: home-assistant
+      rule: "Host(`ha-240-caldeira.duckdns.org`)"
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: production
+    home-assistant2-local:
+      service: home-assistant2
+      rule: "Host(`ha2.home`)"
+      entryPoints:
+        - websecure
+      tls: true
+  services:
+    jellyfin-svc:
+      loadBalancer:
+        servers:
+          - url: http://jellyfin.home:8096
+    home-assistant:
+      loadBalancer:
+        servers:
+          - url: http://homeassistant.home:8123
+    home-assistant2:
+      loadBalancer:
+        servers:
+          - url: http://homeassistant2.home:8123
+  middlewares:
+    basic-auth-global:
+      basicAuth:
+        users:
+          - "admincld:$apr1$plLeZriR$JknnHjoocBEtlpppYi52p0"
+tls:
+  options:
+    default:
+      minVersion: VersionTLS12
+      curvePreferences:
+        - secp521r1
+        - secp384r1
+      cipherSuites:
+        - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
+        - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256
+    mintls13:
+      minVersion: VersionTLS13

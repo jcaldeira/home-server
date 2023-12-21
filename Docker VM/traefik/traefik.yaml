@@ -2,39 +2,42 @@ global:
   checkNewVersion: false
   sendAnonymousUsage: false
 
-
 entryPoints:
-  # http:
-  #   address: :80
-
-  https:
+  web:
+    address: :80
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          permanent: true
+  websecure:
     address: :443
 
-
 api:
-  insecure: true
+  insecure: false
   dashboard: true
 
-
 providers:
+  file:
+    directory: /etc/traefik/dynamic
+    watch: true
   docker:
     exposedByDefault: false
-
+    watch: true
 
 certificatesResolvers:
   staging:
     acme:
       email: "joaocaldeira379@gmail.com"
-      storage: "/etc/traefik/acme.json"
+      storage: "/etc/traefik/acme/acme.json"
       caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
       tlsChallenge: {}
-
   production:
     acme:
       email: "joaocaldeira379@gmail.com"
-      storage: "/etc/traefik/acme.json"
+      storage: "/etc/traefik/acme/acme.json"
+      caServer: "https://acme-v02.api.letsencrypt.org/directory"
       tlsChallenge: {}
-
 
 serversTransport:
   insecureSkipVerify: true

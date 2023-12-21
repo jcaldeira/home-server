@@ -18,14 +18,14 @@ services:
       - host.docker.internal:host-gateway
     labels:
       traefik.enable: true
-      traefik.http.routers.jellyfinlocal.rule: Host(`jellyfin.home`)
-      traefik.http.routers.jellyfinlocal.entrypoints: https
-      traefik.http.routers.jellyfinlocal.tls: true
-      traefik.http.routers.jellyfinlocal.service: jellyfin-svc@file
+      traefik.http.routers.jellyfin-local.rule: Host(`jellyfin.home`) || Host(`jf.home`)
+      traefik.http.routers.jellyfin-local.entrypoints: websecure
+      traefik.http.routers.jellyfin-local.tls: true
+      traefik.http.routers.jellyfin-local.service: jellyfin-svc@file
 
       traefik.http.routers.jellyfin.rule: Host(`jf-240-caldeira.duckdns.org`)
       # traefik.http.routers.jellyfin.rule: Host(`240-caldeira.duckdns.org`) && (PathPrefix(`/jellyfin`) || PathPrefix(`/jellyfin/`))
-      traefik.http.routers.jellyfin.entrypoints: https
+      traefik.http.routers.jellyfin.entrypoints: websecure
       traefik.http.routers.jellyfin.tls: true
       traefik.http.routers.jellyfin.tls.certresolver: production
 
@@ -34,9 +34,9 @@ services:
       # traefik.http.middlewares.jellyfin-strip.stripprefix.forceslash: false
       #### The customResponseHeaders option lists the Header names and values to apply to the response.
       traefik.http.middlewares.jellyfin-mw.headers.customResponseHeaders.X-Robots-Tag: noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex
-      #### The sslRedirect is set to true, then only allow https requests.
+      #### The sslRedirect is set to true, then only allow websecure requests.
       traefik.http.middlewares.jellyfin-mw.headers.SSLRedirect: true
-      #### The sslHost option is the host name that is used to redirect http requests to https.
+      #### The sslHost option is the host name that is used to redirect http requests to websecure.
       #### This is the exact URL that will be redirected to, so you can remove the :9999 port if using default SSL port
       traefik.http.middlewares.jellyfin-mw.headers.SSLHost: jf-240-caldeira.duckdns.org
       #### Set sslForceHost to true and set SSLHost to forced requests to use SSLHost even the ones that are already using SSL.
@@ -59,7 +59,7 @@ services:
       traefik.http.middlewares.jellyfin-mw.headers.customresponseheaders.X-XSS-PROTECTION: 1
       ### The customFrameOptionsValue allows the X-Frame-Options header value to be set with a custom value. This
       ### overrides the FrameDeny option.
-      # traefik.http.middlewares.jellyfin-mw.headers.customFrameOptionsValue: 'allow-from https://240-caldeira.duckdns.org'
+      # traefik.http.middlewares.jellyfin-mw.headers.customFrameOptionsValue: 'allow-from websecure://240-caldeira.duckdns.org'
       # HTTP Service
       # We define the port here as a port is required, but note that the service is pointing to the service defined in @file
       traefik.http.routers.jellyfin.service: jellyfin-svc@file
@@ -73,21 +73,21 @@ volumes:
     driver: local
     driver_opts:
       type: nfs
-      o: addr=truenas.home,rw,nfsvers=4,noatime,rsize=8192,wsize=8192,tcp,timeo=14
+      o: addr=truenas.home,nfsvers=4
       device: :/mnt/bpool/docker_volumes/jellyfin/jellyfin-config
   jellyfin-cache:
     name: jellyfin-cache
     driver: local
     driver_opts:
       type: nfs
-      o: addr=truenas.home,rw,nfsvers=4,noatime,rsize=8192,wsize=8192,tcp,timeo=14
+      o: addr=truenas.home,nfsvers=4
       device: :/mnt/bpool/docker_volumes/jellyfin/jellyfin-cache
   media-fs:
     name: jellyfin-media-fs
     driver: local
     driver_opts:
       type: nfs
-      o: addr=truenas.home,rw,nfsvers=4,noatime,rsize=8192,wsize=8192,tcp,timeo=14
+      o: addr=truenas.home,nfsvers=4
       device: :/mnt/bpool/media-fs
 
 

@@ -15,7 +15,7 @@ services:
     labels:
       traefik.enable: true
       traefik.http.routers.portainer.rule: Host(`portainer.home`)
-      traefik.http.routers.portainer.entrypoints: https
+      traefik.http.routers.portainer.entrypoints: websecure
       traefik.http.routers.portainer.tls: true
       traefik.http.services.portainer.loadbalancer.server.port: 9443
       traefik.http.services.portainer.loadbalancer.server.scheme: https
@@ -26,7 +26,7 @@ volumes:
     driver: local
     driver_opts:
       type: nfs
-      o: addr=truenas.home,rw,nfsvers=4,noatime,rsize=8192,wsize=8192,tcp,timeo=14
+      o: addr=truenas.home,nfsvers=4
       device: :/mnt/bpool/docker_volumes/portainer
 
 networks:
